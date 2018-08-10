@@ -287,12 +287,14 @@ Email: emezura@uv.mx}
 
 % The abstract
 \begin{abstract}
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This paper presents the application of a physics-inspired algorithm based on the 
+center of mass concept, called Bilevel Centers Algorithm (BCA), to deal with 
+bilevel optimization problems. The center of mass is adopted for creating new directions 
+in the continuous search space considering the objective function values of a set 
+of randomly-chosen solutions in a hierarchical structure. The performance of this
+approach is assessed by using representative test function for bilevel optimization.
+The obtained results are compared against the competitive algorithm BLEAQ.  The
+results obtained are promising.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -302,22 +304,34 @@ proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-An optimization problems can be represented as finding the set:
+A new kind of optimization problems are taking interest by researchers.
+Those new problems where introduced in 1934 by Von Stackelberg in \cite{von2010market} 
+and actually is called Bilevel Optimization (BO) . A BO problem is an optimization
+problem (constrained and/or multi-objective and/or discrete, etc.) that contains
+a nested optimization problem \cite{bard2013practical,dempe2002foundations}.
+Note the hierarchal structure introduced which can be useful to model decision-making
+processes, where a leader (upper level authority) optimize their goals restricted to
+optimal decisions/solution given by a follower (lower level authority)
+\cite{brotcorne2001bilevel,kalashnikov2010comparison,sinha2015transportation,von1945theory,wang2014bilevel}.
+
+In order to formally introduce BO problems, we start describing optimization problems.
+It is well known that an optimization problems can be represented as finding the set:
 % 
 \begin{align}
-    X^* &= \arg \min_{\vec{x} \in X} f(\vec{x}) \\
+    \label{eqn:Xargmin}
+    X^* &= \arg \min_{\vec{x} \in X} f(\vec{x}) \\ \nonumber
     &= \{ \vec{x}^* \in X \ : \ f(\vec{x}^*) \leq f( \vec{x} ), \ 
     % 
     \forall
     % 
     \vec{x} \in X \},
-    \label{eqn:Xargmin}
 \end{align}
 % 
-where, $X$ is a $D$-dimensional vector space of parameters, usually $X \subset \mathbb{R}^D$
+where $f$ is bounded below function, i.e., $f(x^*) > -\infty$. $f$ is called objective
+function. $X$ is a $D$-dimensional space of parameters, usually $X \subset \mathbb{R}^D$
 is the domain for $\vec{x}$ representing constraints on allowable values for $\vec{x}$.
 Equation \ref{eqn:Xargmin} may be read as: $X^*$ is the set of values (arguments)
-$\vec{x} = \vec{x}^*$ that minimize $f(\vec{x})$ subject to $X^*$.
+$\vec{x} = \vec{x}^*$ that minimize $f(\vec{x})$ subject to $X^*$ (see Figure \ref{fig:single-level}).
 
 % 
 \begin{figure}[!ht]
@@ -329,8 +343,13 @@ $\vec{x} = \vec{x}^*$ that minimize $f(\vec{x})$ subject to $X^*$.
 
 An optimization problem is solved only when a global minimum
 is found. However, global minimum are, in general, difficult to find. Therefore,
-in practice, we often have to find at least a local minimum.
+in practice, we often have to find at least a local minimum \cite{rao2009engineering,back}.
 
+
+Now, we can define a general BO problem with single-objective functions at both
+levels can be defined as follows \cite{bard2013practical,dempe2002foundations}:
+
+\noindent
 Minimize
 \begin{equation}
     F(x,\ y) \ \ x \in X , \ y \in Y 
@@ -346,7 +365,10 @@ subject to:
     \label{eqn:G}
 \end{align}
 where $F: X \times Y \to \mathbb{R}$ y $f: X \times Y \to \mathbb{R}$
-are the upper-level objective function (leader) and upper-level objective function (follower), respectively. In this work, $X \subseteq \mathbb{R}^n$ and $Y \subseteq \mathbb{R}^m$ is considered. The Figure \ref{fig:bilevel} shows a schematic diagram of a bilevel optimization problem.
+are the upper-level objective function (leader) and lower-level objective function
+(follower), respectively. In this work, $X \subseteq \mathbb{R}^n$ and
+$Y \subseteq \mathbb{R}^m$ is considered. The Figure \ref{fig:bilevel} shows a
+schematic diagram of a bilevel optimization problem.
 % 
 \begin{figure}[!ht]
     \centering
@@ -357,11 +379,60 @@ are the upper-level objective function (leader) and upper-level objective functi
     \label{fig:bilevel}
 \end{figure}
 
+In 1992, Hansen et al. probed that BO problems are (strongly) NP-hard since for
+evaluating a solution in the simplest BO problem (unimodal linear programming at
+both levels) is also NP-hard \cite{hansen1992new,vicente1994descent}. Many real
+world-problems can be naturally transformed into  BO problems \cite{sinha2018review},
+for example: taxation, border security problems, transportation problems, among
+others \cite{arroyo2010bilevel,bard2013practical,sinha2018review}.
+
+Due to the importance of BO, many authors have proposed different kind of solutions
+for those problems e.g. mathematical approaches (mathematical programming,
+Karush-Kuhn-Tucker condition for single-level reduction) \cite{shi2005extended,dempe2002foundations},
+evolutionary computation (genetic algorithms, evolution strategy, particle swarm
+optimization, etc.) \cite{derrac2011practical,angelo2013differential,sinha2012unconstrained}.
+In order to handle BO problems, there exist principally three strategies: nested,
+single-level reduction and penalty methods. Nested strategies can be effective but
+computationally very expensive when objective functions are computationally
+expensive or high-dimensionality is present. Single-level reduction is used to
+transform a BO problem into a single-level problem, usually via Karush-Kuhn-Tucker
+conditions for smooth lower level objective function; as we can see, this strategy
+is restricted for differentiable functions \cite{dempe2002foundations,colson2007overview}.
+Penalty methods transform a constrained method into unconstrained adding some
+penalties controlled by using parameters; this strategy can be simple for understanding
+but hard to calibrate in large-scale problems \cite{savard1994steepest,white1993penalty}.
+
+As mentioned, some algorithms for BO are reported in the specialized literature,
+actually they are focused on evolutionary computation, since those algorithms have
+been successfully used to solve single-level optimization problems, however the
+complexity time increases considerably when they are applied to BO problems. On
+the other hand, physics-inspired inspired algorithms have been successful used
+for solving single-level optimization problems. Although, they are not as popular
+as the evolutionary algorithms; physics-inspired algorithms can show good performance
+and it can be interesting study it performance in BO problems. On the other hand,
+no physics-inspired algorithms for BO are reported in the state-of-the-art. In this
+paper we present a preliminary version of a physics-inspired algorithm for BO. Here,
+unconstrained nested scheme is considered.
+
+Our approach is called Bilevel Centers Algorithm (BCA) and is based on the center
+of mass concept. Without loss of generality, we assume a maximization problem for
+non-negative functions $f$ and $F$. The center of mass is used in both levels, in
+order to create new biased directions towards promising/feasible regions in the
+search space.
+
+
+This paper is organized as follows: The next section presents the lower level
+optimizer which uses the center of mass concept to promote a biased search to
+promising search space regions. Our approach is presented in the
+Section \ref{sec:ll-optimizer}. Section \ref{sec:experiments} gives some experiments
+and discussion about BCA performance. Conclusions and Future work are described
+in Section \ref{sec:conclu}  and Section \ref{sec:future}, respectively.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Lower Level Optimizer} % (fold)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\label{sec:eca}
+\label{sec:ll-optimizer}
 
 The center of mass is the unique point $\vec{c}$ at the center of a distribution
 of mass $U = \{\vec{u}_1,\; \vec{u}_2 , \ldots , \vec{u}_K \}$ in a space that 
@@ -379,17 +450,19 @@ point is zero. That is:
 where $m(\vec{u}_i)$ is the mass of $\vec{u}_i$ and  $M$ is the sum of the 
 masses of vectors in $U$. Here, $m$ is a non-negative function.
  
-The lower level optimizer works as follows: for each solution $\vec{y}_i $ in the population $P = \{ \vec{y}_1,\ \vec{y}_2, \ \ldots, \ \vec{y}_{N} \} $
-of $N$  solutions, we generate $U_i \subset P $ with $K$ \textbf{different}
+Thus, the lower level optimizer works as follows: for each solution $\vec{y}_i $
+in the population $P = \{ \vec{y}_1,\ \vec{y}_2, \ \ldots, \ \vec{y}_{N} \} $
+of $N$  solutions in $Y$, we generate $U_i \subset P $ with $K$ \textbf{different}
 solutions such that
 % 
 $$
 \bigcup_{i=1}^N U_i = P.
 $$
 %
-Next, from $U_i$ the center of mass $\vec{c}_i$ is computed by using the Equation \ref{eqn:masscenter} by setting $m(\vec{u}) = f(\vec{x}, \vec{u})$ where $\vec{x}$ is fixed.
-After that, \textbf{the worst element} $\vec{u}_{\text{worst}}$ in $U_i$ is selected
-according to the following rule:
+Next, from $U_i$ the center of mass $\vec{c}_i$ is computed by using the
+Equation \ref{eqn:masscenter} by setting $m(\vec{u}) = f(\vec{x}, \vec{u})$ where
+$\vec{x}$ is fixed. After that, \textbf{the worst element} $\vec{u}_{\text{worst}}$
+in $U_i$ is selected according to the following rule:
 % 
 $$
     \vec{u}_{\text{worst}} \in \arg \min \{f(\vec{x}, \ \vec{u} ) 
@@ -402,37 +475,22 @@ $$
 Now, we are able to generate a direction to locate a new solution $ \vec{y}_i$
 using the already generated center of mass $\vec{c}_i$, $\vec{y}_i$ and $\vec{u}_{\text{worst}}$.
 % 
-$$
-    \vec{h}_i = \vec{y}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ).
-$$
-% 
-
-To improve the exploration process to avoid premature convergence since ECA can provide a fast convergence. Thus we can take advantage of it to exploit the vicinity near the best solution found using the last objective function evaluations. That is, generating a new solution with Equation \ref{eqn:vcu2}:
-%
 \begin{equation}
-    \vec{h}_i = 
-    \begin{cases}
-        \vec{y}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ) 
-               & \text{ if } t/T < 0.95 \\
-        % 
-        \vec{y}_i + \eta _{i} ( \vec{y}_{\text{best}} - \vec{c}_i)
-               & \text{ otherwise}
-    \end{cases}
+    \vec{q}_i = \vec{y}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ) ,
     \label{eqn:vcu2}
 \end{equation}
-%
-where, $ 0.95$ is the evaluation ratio (current number of function
-evaluation / max. number of function evaluations), $t/T$ is the
-last percentage of evaluations used for an exploitation process and $\vec{y}_{\text{best}}$
-is the best element ever found. Finally, if $\vec{h}_i$  is better than $\vec{y}_i$,
-then the worst element in $P$ is replaced by $\vec{h}$.
 % 
 
-\begin{algorithm}[!h]
-    \caption{ECA pseudocode}
-    \label{algoritmoEca}
+Due to this stochastic strategy, this variation operator can help the exploration
+process to avoid premature convergence and it is capable to exploit the vicinity
+near the best solution found. The replacement operator works as follows, if $\vec{q}_i$
+is better than $\vec{y}_i$, then the worst element in $P$ is replaced by $\vec{q}$.
+
+\begin{algorithm}[b]
+    \caption{Lower Level Optimizer pseudocode}
+    \label{alg:ll-optimizer}
     \begin{algorithmic}[1]
-        \REQUIRE {upper level parameter $\vec{x}$, $K = 7, \; \eta_{\max} = 2$}
+        \REQUIRE {upper level parameter $\vec{p}$, $K = 7, \; \eta_{\max} = 2$}
         \STATE $N \gets K*D$
         \STATE Initialize a population $P \subset Y$ with $N$ elements
         \WHILE{the end criterion is not achieved}
@@ -440,10 +498,10 @@ then the worst element in $P$ is replaced by $\vec{h}$.
                 \STATE Generate a subset $U \subset P$ with $K$ solutions
                 \STATE Calculate $\vec{c}$ using $U$ with (\ref{eqn:masscenter})
                 \STATE $\eta \gets \text{rand}(0,\; \eta_{\max}) $ 
-                \STATE Compute $\vec{h}$ using Eq. (\ref{eqn:vcu2})
+                \STATE Compute $\vec{q}$ using Eq. (\ref{eqn:vcu2})
                 % 
-                \IF{$ f (\vec{x},\ \vec{y}) < f (\vec{x}, \ \vec{h})  $}
-                    \STATE Replace worst element in $P$ with $\vec{h}$
+                \IF{$ f (\vec{p},\ \vec{y}) < f (\vec{p}, \ \vec{q})  $}
+                    \STATE Replace worst element in $P$ with $\vec{q}$
                 \ENDIF
                 % 
             \ENDFOR
@@ -465,33 +523,53 @@ population size over time is:
 % 
 where $t = 0,1,2,\ldots,T$ and $T$ is the maximum number of iterations.
 
+The procedure for the implementation of the lower level optimizer is detailed in
+Algorithm \ref{alg:ll-optimizer}.
+% 
+
+
 
 % section eca (end)
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{BCA} % (fold)
 \label{sec:bca}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The variation operator of BCA is considering some properties, first
-the population for bilevel optimization is defined as follows: 
+Here, BCA is presented as the upper lower optimizer. We start describing the
+variation operator of BCA which is considering some properties. Let $F$ and $f$
+defined as in (\ref{eqn:minF1})-(\ref{eqn:G}), and without lost of generality, we
+can assume that both $F$ and $f$ are non-negative and we want to maximize them.
+Hence, the population for a BO problem can be defined as follows: 
 $$
     P = \{ (\vec{x}_1,\; \vec{y}_1), \ (\vec{x}_2,\; \vec{y}_2), \ldots,
            (\vec{x}_N,\; \vec{y}_N)
          \}
-         \subset X \times Y .
+         \subset X \times Y,
 $$
+where $\vec{y}_i \in \arg \min \{ f(\vec{x}_i, \ \vec{z}) \ : \ \vec{z} \in Y \}$
+for $i = 1,\ldots,N$. Here, $\vec{x}_i$ is uniformly at random.
 % 
-Let $F$ and $f$ be defined as in (\ref{eqn:minF1})-(\ref{eqn:G}), and without lost 
-of generality, we can assume that both $F$ and $f$ are  non-negative and we want to maximize them. For each iteration and each $(\vec{x}_i,\; \vec{y}_i) \in P$, a new solution is generated using the following formulation:
+
+\subsection{Algorithm Description} % (fold)
+\label{sub:algorithm_description}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{img/bca-ul.pdf}
+    \caption{Diagram of BCA. Here, $x_1,\ldots,x_K$ are used to compute better
+    upper level parameters $\vec{p}$. Note that $(x_i,\ y_i^*)$ and
+    $(\vec{p},\ \vec{q})$ are feasible solution.}
+    \label{fig:bca-diag}
+\end{figure}
+
+Now, we are able to describe the BCA procedure: For each iteration and each
+solution $(\vec{x}_i,\; \vec{y}_i) \in P$, a new upper level parameter is generated
+using the following formulation:
 % 
 \begin{equation}
-    \vec{p}_i = 
-    \begin{cases}
-        \vec{x}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ) 
-               & \text{ if } t/T < 0.95 \\
-        % 
-        \vec{x}_i + \eta _{i} ( x_{\text{best}} - \vec{c}_i)
-               & \text{ otherwise}
-    \end{cases}
+    \vec{p}_i =  \vec{x}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ),
     \label{eqn:vcu2F}
 \end{equation}
 % 
@@ -499,25 +577,42 @@ of generality, we can assume that both $F$ and $f$ are  non-negative and we want
 where the $\vec{c}_i$ is the center of mass is computed using:
 %
 \begin{equation}
-    \vec{c}_i = \dfrac{1} {W} \sum_{(x,y) \in U} F(\vec{x},\ \vec{y}) \cdot \vec{x} , 
+    \vec{c}_i = \dfrac{1} {W} \sum_{(x,y) \in U} Q(\vec{x},\ \vec{y}) \cdot \vec{x} , 
             \hspace{0.5cm} 
-            W = \sum_{ (x,y) \in U} F(\vec{x},\ \vec{y}),
+            W = \sum_{ (x,y) \in U} Q(\vec{x},\ \vec{y}),
             % \hspace{0.5cm} 
             % U \subseteq P.
     \label{eqn:centerF}
 \end{equation} 
 % 
-with $U \subset P $ such that card$(U) = K$  and $\vec{u}_{ \text{worst}}$ is the first coordinate of the worst element in $U$.
+where $Q(\vec{x},\ \vec{y}) = F(\vec{x},\ \vec{y}) + f(\vec{x},\ \vec{y})$, $U \subset P $
+such that card$(U) = K$  and $\vec{u}_{ \text{worst}}$ is the first coordinate of
+the worst element in $U$, i.e.
+
+$$
+    \vec{u}_{\text{worst}} \in \arg \min \{F(\vec{u}, \ \vec{y} ) 
+    % 
+    \ : \
+    % 
+    \vec{u} \in U_i \}.
+$$
+% 
+Note that the function $Q(\vec{x},\ \vec{y})$ is used to translate the upper level
+population towards regions where $F$ and $f$ are maximized simultaneously.
 
 Finally, the new solution is given by $ (\vec{p}, \ \vec{q}) $ which may 
-replace the worst solution in $ P $. Here,
+replace the worst solution in $ P $ if it is better than $(\vec{x}_i,\; \vec{y}_i)$. Here,
 $  \vec{q} = \arg \min _ {\vec{z} \in Y} f (\vec{p}, \ \vec{z}) $ obtained
-by applying ECA. This procedure is summarized in Algorithm \ref{alg:BCA}.
+by applying the Algorithm \ref{alg:ll-optimizer}. Figure \ref{fig:bca-diag}
+shows a representation of BCA solution update. 
 
-Note that the nested case was considered. Experiments are currently being carried out in test functions to know the efficiency of BCA and how it is positioned with respect to algorithms of the state of the art.
+BCA is summarized in Algorithm \ref{alg:BCA} and was used to carried out some
+experiments by using eight representative test functions for bilevel optimization
+(SMD problems) which are described in \cite{angelo2013differential,sinha2012unconstrained}.
+This empirical study is used to quantify the efficiency of BCA and how it is
+positioned with respect to algorithms of the state-of-the-art.
 % 
 
-Algorithm \ref{alg:BCA} is the general pseudocode of ECA.
 
 \begin{algorithm}[!t]
     \caption{BCA pseudocode}
@@ -534,36 +629,53 @@ Algorithm \ref{alg:BCA} is the general pseudocode of ECA.
                 \STATE Calculate $\vec{p}$ using Eq. (\ref{eqn:vcu2F})
                 \STATE Find $\displaystyle \vec{q} \in \arg \min_{\vec{z}\in Y} f(\vec{p},\ \vec{z})$ by using ECA
                 
-                \IF{$ F (\vec{x},\ \vec{y}) < F (\vec{p},\ \vec{q})  $}
+                \IF{$ G (\vec{x},\ \vec{y}) < G (\vec{p},\ \vec{q})  $}
                     \STATE Replace worst element in $P$ with $(\vec{p},\ \vec{q})$.
                 \ENDIF
             \ENDFOR
+            \STATE Resize $P$ if necessary.
         \ENDWHILE
         \STATE Report best solution in $P$
         % \EndProcedure
     \end{algorithmic}
 \end{algorithm}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments and Discussion}
+\label{sec:experiments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-The algorithm BCA for bilevel optimization. BCA is used to solve the test functions
-described in \cite{sinha2012unconstrained,sinha2014test}.
+BCA was used to solve some representative test functions described in
+\cite{sinha2012unconstrained,sinha2014test}. The configuration was:
+% 
+% 
+The number of Function Evaluations (NFEs) were fixed for the upper level ($500D_{UL} = 2500$)
+and the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
 
 \begin{itemize}
     \item Upper level dimension $D_{UL} = 5$
     \item Lower level dimension $D_{LL} = 5$
+    \item Upper level population size $K*D_{UL}$
+    \item Lower level population size $K*D_{LL}$
+    \item $K = 7$
+    \item $\eta_{\max} = 2$
+    \item Stop condition: BCA stopped when the accuracy ($1\times 10^{-4}$) or
+    the maximum NFEs allowed was reached.
 \end{itemize}
 
-Function Evaluations (FE) were fixed for the upper level ($500D_{UL} = 2500$) and
-the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
+
+BCA was compared against BLEAQ which is an evolutionary algorithm for BO problems
+\cite{sinha2013efficient,sinha2018review}. BLEAQ is based on quadratic approximations
+of optimal lower level variables with respect to the upper level variables to reduce
+the NFES with competitive results. Both algorithms were used to solve independently
+31 time each test problem.
 
 
 
-\begin{table}[!t]
+\begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Leader accuracy statistics obtained from 31 independent runs.}
-    \label{tab:leader}
+    \caption{Upper level accuracy statistics obtained from 31 independent runs.}
+    \label{tab:ul-accuracy}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
 %---------------------------------------------
@@ -582,10 +694,10 @@ the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
     \end{tabular}
 \end{table}
 
-\begin{table}[!t]
+\begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Follower accuracy statistics obtained from 31 independent runs.}
-    \label{tab:follower}
+    \caption{Lower level accuracy statistics obtained from 31 independent runs.}
+    \label{tab:ll-accuracy}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
 %---------------------------------------------
@@ -605,10 +717,10 @@ the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
     \end{tabular}
 \end{table}
 
-\begin{table}[!t]
+\begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{leader evals statistics obtained from 31 independent runs.}
-    \label{tab:follower}
+    \caption{Upper level NFEs statistics obtained from 31 independent runs.}
+    \label{tab:ul-fes}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
 %---------------------------------------------
@@ -629,24 +741,24 @@ the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
     \end{tabular}
 \end{table}
 
-\begin{table}[!t]
+\begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{follower evals statistics obtained from 31 independent runs.}
-    \label{tab:follower}
+    \caption{Lower level NFEs statistics obtained from 31 independent runs.}
+    \label{tab:ll-fes}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
 %---------------------------------------------
 \hline
 &\textbf{Best}&\textbf{Median}&\textbf{Mean}&\textbf{Worst}&\textbf{Std.}\\ \hline 
 %---------------------------------------------
-\textbf{DMD1} & 3110000  & 3815000  & 3848548.4  & 4697500  & 380298.6 \\ \hline
-\textbf{DMD2} & 3110000  & 3702500  & 3707096.8  & 6252500  & 551750.7 \\ \hline
-\textbf{DMD3} & 3412500  & 3815000  & 4119596.8  & 6252500  & 718793.3 \\ \hline
-\textbf{DMD4} & 2922500  & 3587500  & 3593145.2  & 4500000  & 328481.3 \\ \hline
-\textbf{DMD5} & 3292500  & 3815000  & 3886048.4  & 4745000  & 344415.4 \\ \hline
-\textbf{DMD6} & 6252500  & 6252500  & 6252500  & 6252500  & 0 \\ \hline
-\textbf{DMD7} & 6252500  & 6252500  & 6252500  & 6252500  & 0 \\ \hline
-\textbf{DMD8} & 4450000  & 5547500  & 5586612.9  & 6252500  & 517397.6 \\ \hline
+\textbf{SMD1} & 3110000  & 3815000  & 3848548.4  & 4697500  & 380298.6 \\ \hline
+\textbf{SMD2} & 3110000  & 3702500  & 3707096.8  & 6252500  & 551750.7 \\ \hline
+\textbf{SMD3} & 3412500  & 3815000  & 4119596.8  & 6252500  & 718793.3 \\ \hline
+\textbf{SMD4} & 2922500  & 3587500  & 3593145.2  & 4500000  & 328481.3 \\ \hline
+\textbf{SMD5} & 3292500  & 3815000  & 3886048.4  & 4745000  & 344415.4 \\ \hline
+\textbf{SMD6} & 6252500  & 6252500  & 6252500  & 6252500  & 0 \\ \hline
+\textbf{SMD7} & 6252500  & 6252500  & 6252500  & 6252500  & 0 \\ \hline
+\textbf{SMD8} & 4450000  & 5547500  & 5586612.9  & 6252500  & 517397.6 \\ \hline
 %---------------------------------------------
     \end{tabular}
 \end{table}
@@ -654,10 +766,10 @@ the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{table}[!t]
+\begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Function values at median BCA and BLEAQ obtained from 31 independent runs.}
-    \label{tab:leader2}
+    \caption{NFEs at median of BCA and BLEAQ obtained from 31 independent runs.}
+    \label{tab:ul-comparative-fes}
     \centering
     \begin{tabular}{|c|c|c||c|c|}
 %---------------------------------------------
@@ -679,10 +791,10 @@ SMD8 & \textbf{2219} & 5569 & 5547500 & \textbf{289886} \\ \hline
 \end{table}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table}[!t]
+\begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Evals median BCA and BLEAQ obtained from 31 independent runs.}
-    \label{tab:leader2}
+    \caption{Functions values at median of BCA and BLEAQ obtained from 31 independent runs.}
+    \label{tab:ll-comparative-vals}
     \centering
     \begin{tabular}{|c|c|c||c|c|}
 %---------------------------------------------
@@ -690,27 +802,69 @@ SMD8 & \textbf{2219} & 5569 & 5547500 & \textbf{289886} \\ \hline
 & \multicolumn{2}{c||}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
 & BCA & BLEAQ & BCA & BLEAQ \\ \hline
 %---------------------------------------------
-SMD1  & 5.36E--05 & 9.91E--05 & 2.07E--05 & 6.72E--05 \\ \hline
-SMD2  & 4.68E--05 & 2.82E--04 & 1.82E--05 & 3.84E--04 \\ \hline
-SMD3  & 5.51E--05 & 4.96E--06 & 2.25E--05 & 6.26E--06 \\ \hline
-SMD4  & 4.90E--05 & 1.54E--04 & 3.66E--05 & 6.12E--04 \\ \hline
-SMD5  & 5.04E--05 & 1.62E--04 & 2.01E--05 & 3.08E--04 \\ \hline
-SMD6  &  1.90E+01 & 1.46E--13 & 2.87E--02 & 8.66E--16 \\ \hline
-SMD7  & 9.76E--01 & 9.76E--02 &  3.75E+02 &  1.25E+02 \\ \hline
-SMD8  & 6.50E--05 & 7.46E--03 & 2.33E--05 & 5.63E--03 \\ \hline
+SMD1  & \textbf{5.36E--05} & 9.91E--05 & \textbf{2.07E--05} & 6.72E--05 \\ \hline
+SMD2  & \textbf{4.68E--05} & 2.82E--04 & \textbf{1.82E--05} & 3.84E--04 \\ \hline
+SMD3  & 5.51E--05 & \textbf{4.96E--06} & 2.25E--05 & \textbf{6.26E--06} \\ \hline
+SMD4  & \textbf{4.90E--05} & 1.54E--04 & \textbf{3.66E--05} & 6.12E--04 \\ \hline
+SMD5  & \textbf{5.04E--05} & 1.62E--04 & \textbf{2.01E--05} & 3.08E--04 \\ \hline
+SMD6  &  1.90E+01 & \textbf{1.46E--13} & 2.87E--02 & \textbf{8.66E--16} \\ \hline
+SMD7  & 9.76E--01 & \textbf{9.76E--02} &  3.75E+02 &  \textbf{1.25E+02} \\ \hline
+SMD8  & \textbf{6.50E--05} & 7.46E--03 & \textbf{2.33E--05} & 5.63E--03 \\ \hline
 
 %---------------------------------------------
     \end{tabular}
 \end{table}
 
+
+
+
+
+
+Tables \ref{tab:ul-accuracy} and \ref{tab:ll-accuracy} shows the statistics
+obtained from the accuracy obtained in the two levels. The best, median, mean,
+worst and std. deviation function evaluations required to solve the respective
+problem using BCA is given in Table \ref{tab:ul-fes} and \ref{tab:ll-fes} for
+each level, respectively. Tables \ref{tab:ul-comparative-fes} and \ref{tab:ul-comparative-fes}
+compares the median accuracy and NFEs at the upper and lower levels required by
+BCA against that required by BLEAQ. Note that, a result in \textbf{boldface} indicates
+the best values found.
+
+
+It can be observed that both BCA and BLEAQ obtained similar results at median,
+nevertheless BCA require less function evaluations for most of the test problems
+at upper level; this is an interesting property, since we can propose a mathematical
+methodology in order to decrease than number of function evaluations at lower level,
+since the experiments shows an huge number of evaluations are required at this level.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
-The conclusion goes here.
+\label{sec:conclu}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This work detailed a physics-inspired algorithm based on center of mass for bilevel
+optimization. Eight test functions for bilevel optimization were employed in order
+to analyze the performance of the proposed algorithm in terms of accuracy and
+upper/lower level function evaluations.
+
+Additionally, the results showed that BCA was able to provide competitive
+results (in terms of accuracy) compared to an efficient algorithm.
 
 
-\section*{Acknowledgment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Future Work}
+\label{sec:future}
 
+The future paths of research are the following: Make a mathematical study  in
+order to approximate feasible solutions at lower level and decrease number of
+evaluations required at this level; adapt some penalty methods to transform the
+nested scheme into a single level optimization problem; also, constraint-handling
+techniques will be explored to scale BCA.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The authors would like to thank...\cite{deb2000efficient}
+% \section*{Acknowledgment}
+% The authors would like to thank...
 
 
 
