@@ -516,7 +516,7 @@ where $t = 0,1,2,\ldots,T$ and $T$ is the maximum number of iterations.
 The procedure for the implementation of the lower level optimizer is detailed in
 Algorithm \ref{alg:ll-optimizer}.
 % 
-\begin{algorithm}[b]
+\begin{algorithm}[!ht]
     \caption{Lower Level Optimizer pseudocode}
     \label{alg:ll-optimizer}
     \begin{algorithmic}[1]
@@ -576,7 +576,7 @@ for $i = 1,\ldots,N$. Here, $\vec{x}_i$ is generated at random with uniform dist
     \includegraphics[width=0.95\linewidth]{img/bca-ul.pdf}
     \caption{Diagram of BCA. Here, $x_1,\ldots,x_K$ are used to compute better
     upper level parameters $\vec{p}$. Note that $(x_i,\ y_i^*)$ and
-    $(\vec{p},\ \vec{q})$ are feasible solutions.}
+    $(\vec{p},\ \vec{q})$ represent feasible solutions.}
     \label{fig:bca-diag}
 \end{figure}
 
@@ -615,7 +615,8 @@ the worst element in $U$, see Eq. \ref{eqn:uplev-worst}.
 \end{equation}
 % 
 Note that the function $Q(\vec{x},\ \vec{y})$ is used to translate the upper level
-population towards regions where $F$ and $f$ are maximized simultaneously.
+population towards regions where $F$ is maximized while $f$ may control the bias to
+feasible solutions.
 
 Finally, the new solution is given by $ (\vec{p}, \ \vec{q}) $ which may 
 replace the worst solution in $ P $ if it is better than $(\vec{x}_i,\; \vec{y}_i)$. Here,
@@ -635,9 +636,10 @@ solve a set of eight test problems to assess the performance of BO algorithms,
 known as SMD problems. Those test problems  are described
 in \cite{angelo2013differential,sinha2012unconstrained,sinha2014test}.
 % 
-
-
-\begin{algorithm}[!t]
+% 
+% 
+% 
+\begin{algorithm}[!ht]
     \caption{BCA pseudocode}
     \label{alg:BCA}
     \begin{algorithmic}[1]
@@ -825,14 +827,14 @@ SMD8 & \textbf{2219} & 5569 & 5547500 & \textbf{289886} \\ \hline
 & \multicolumn{2}{c||}{Upper Level} & \multicolumn{2}{c|}{Lower Level} \\ \hline
 & BCA & BLEAQ & BCA & BLEAQ \\ \hline
 %---------------------------------------------
-SMD1  & \textbf{5.36E--05} & 9.91E--05 & \textbf{2.07E--05} & 6.72E--05 \\ \hline
-SMD2  & \textbf{4.68E--05} & 2.82E--04 & \textbf{1.82E--05} & 3.84E--04 \\ \hline
-SMD3  & 5.51E--05 & \textbf{4.96E--06} & 2.25E--05 & \textbf{6.26E--06} \\ \hline
-SMD4  & \textbf{4.90E--05} & 1.54E--04 & \textbf{3.66E--05} & 6.12E--04 \\ \hline
-SMD5  & \textbf{5.04E--05} & 1.62E--04 & \textbf{2.01E--05} & 3.08E--04 \\ \hline
-SMD6  &  1.90E+01 & \textbf{1.46E--13} & 2.87E--02 & \textbf{8.66E--16} \\ \hline
-SMD7  & 9.76E--01 & \textbf{9.76E--02} &  3.75E+02 &  \textbf{1.25E+02} \\ \hline
-SMD8  & \textbf{6.50E--05} & 7.46E--03 & \textbf{2.33E--05} & 5.63E--03 \\ \hline
+SMD1  & \textbf{5.35E--05} &          9.91E--05 & \textbf{2.06E--05} &          6.72E--05 \\ \hline
+SMD2  & \textbf{4.68E--05} &          2.82E--04 & \textbf{1.81E--05} &          3.84E--04 \\ \hline
+SMD3  &          5.51E--05 & \textbf{4.96E--06} &          2.24E--05 & \textbf{6.26E--06} \\ \hline
+SMD4  & \textbf{4.90E--05} &          1.54E--04 & \textbf{3.65E--05} &          6.12E--04 \\ \hline
+SMD5  & \textbf{5.03E--05} &          1.62E--04 & \textbf{2.01E--05} &          3.08E--04 \\ \hline
+SMD6  &           1.90E+01 & \textbf{1.46E--13} &          2.86E--02 & \textbf{8.66E--16} \\ \hline
+SMD7  &          9.75E--01 & \textbf{9.76E--02} &           3.74E+02 &  \textbf{1.25E+02} \\ \hline
+SMD8  & \textbf{6.49E--05} &          7.46E--03 & \textbf{2.33E--05} &          5.63E--03 \\ \hline
 
 %---------------------------------------------
     \end{tabular}
@@ -857,7 +859,7 @@ that BCA is able to consistently reach very competitive results in all test prob
 for both levels. Just problem SMD7 was difficult to solve by BCA. 
 
 A similar robust performance was observed by BCA in the upper level regarding NFEs
-as indicated in Table \ref{tab:ul-fes}. In constrast, more variation in the number
+as indicated in Table \ref{tab:ul-fes}. In contrast, more variation in the number
 of NFEs was reported in Table \ref{tab:ll-fes} for the lower level. 
 
 
