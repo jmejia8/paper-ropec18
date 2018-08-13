@@ -246,7 +246,7 @@
 \begin{document}
 %
 % paper title
-\title{Physics-inspired Algorithm for \\ Bilevel Optimization}
+\title{A Physics-Inspired Algorithm\\ for Bilevel Optimization}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -290,11 +290,11 @@ Email: emezura@uv.mx}
 This paper presents the application of a physics-inspired algorithm based on the 
 center of mass concept, called Bilevel Centers Algorithm (BCA), to deal with 
 bilevel optimization problems. The center of mass is adopted for creating new directions 
-in the continuous search space considering the objective function values of a set 
-of randomly-chosen solutions in a hierarchical structure. The performance of this
-approach is assessed by using representative test function for bilevel optimization.
-The obtained results are compared against the competitive algorithm BLEAQ.  The
-results obtained are promising.
+in the bilevel continuous search space considering the objective function values of a set 
+of randomly-chosen solutions in a hierarchical optimization structure. The performance of this
+approach is assessed by using representative test functions for bilevel optimization.
+The obtained results are compared against the state-of-the algorithm BLEAQ. The
+results based on accuracy and number of evaluations are competitive and promising.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -304,18 +304,20 @@ results obtained are promising.
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-A new kind of optimization problems are taking interest by researchers.
-Those new problems where introduced in 1934 by Von Stackelberg in \cite{von2010market} 
-and actually is called Bilevel Optimization (BO) . A BO problem is an optimization
-problem (constrained and/or multi-objective and/or discrete, etc.) that contains
-a nested optimization problem \cite{bard2013practical,dempe2002foundations}.
-Note the hierarchal structure introduced which can be useful to model decision-making
-processes, where a leader (upper level authority) optimize their goals restricted to
-optimal decisions/solution given by a follower (lower level authority)
+A new kind of optimization problem has been gaining interest by researchers in
+recent years. That problem was introduced in 1934 by Von Stackelberg in \cite{von2010market} 
+and it is known nowadays as the  Bilevel Optimization (BO) problem. A BO problem
+can be unconstrained, constrained, single and/or multi-objective, continuous and/or
+discrete, etc. but in any type it contains a nested optimization problem as a
+constraint \cite{bard2013practical,dempe2002foundations}. Such introduced hierarchical
+structure can be useful to model decision-making processes, where a leader(upper
+level authority) optimizes their goals restricted to optimal decisions/solutions
+given by a follower (lower level authority)
 \cite{brotcorne2001bilevel,kalashnikov2010comparison,sinha2015transportation,von1945theory,wang2014bilevel}.
 
-In order to formally introduce BO problems, we start describing optimization problems.
-It is well known that an optimization problems can be represented as finding the set:
+In order to formally introduce BO problems, we start by stating the traditional
+optimization problem. It is well known that, without loss of generality, an
+optimization problem can be defined as finding the set:
 % 
 \begin{align}
     \label{eqn:Xargmin}
@@ -327,11 +329,11 @@ It is well known that an optimization problems can be represented as finding the
     \vec{x} \in X \},
 \end{align}
 % 
-where $f$ is bounded below function, i.e., $f(x^*) > -\infty$. $f$ is called objective
-function. $X$ is a $D$-dimensional space of parameters, usually $X \subset \mathbb{R}^D$
+where a bounded below function $f$ , i.e., $f(x^*) > -\infty$ is called objective
+function. $X$ is a $D$-dimensional parameter space, usually $X \subset \mathbb{R}^D$
 is the domain for $\vec{x}$ representing constraints on allowable values for $\vec{x}$.
-Equation \ref{eqn:Xargmin} may be read as: $X^*$ is the set of values (arguments)
-$\vec{x} = \vec{x}^*$ that minimize $f(\vec{x})$ subject to $X^*$ (see Figure \ref{fig:single-level}).
+Eq. \ref{eqn:Xargmin} may be read as: $X^*$ is the set of values (arguments)
+$\vec{x} = \vec{x}^*$ that minimizes $f(\vec{x})$ subject to $X^*$ (see Figure \ref{fig:single-level}).
 
 % 
 \begin{figure}[!ht]
@@ -346,13 +348,13 @@ is found. However, global minimum are, in general, difficult to find. Therefore,
 in practice, we often have to find at least a local minimum \cite{rao2009engineering,back}.
 
 
-Now, we can define a general BO problem with single-objective functions at both
-levels can be defined as follows \cite{bard2013practical,dempe2002foundations}:
+After the above definitions, a general single-objective BO problem with single-objective
+functions at both levels can be defined as follows \cite{bard2013practical,dempe2002foundations}:
 
 \noindent
 Minimize
 \begin{equation}
-    F(x,\ y) \ \ x \in X , \ y \in Y 
+    F(\vec{x},\ \vec{y}) \ \ \vec{x} \in X , \ \vec{y} \in Y 
     \label{eqn:minF1}
 \end{equation}
 % 
@@ -360,15 +362,16 @@ subject to:
 % 
 \begin{align}
     \label{eqn:y-arg}
-    &y \in \arg \min \{ f(x, y) \ : \ g_j(x, y) \leq 0, \ j = 1,\ldots, J \}\\
-    &G_k(x, y)  \leq 0, \ k = 1,\ldots,K
+    &\vec{y} \in \arg \min \{ f(\vec{x}, \vec{y}) \ : \ g_j(\vec{x}, \vec{y}) \leq 0, \ j = 1,\ldots, J \}\\
+    &G_k(\vec{x}, \vec{y})  \leq 0, \ k = 1,\ldots,K
     \label{eqn:G}
 \end{align}
-where $F: X \times Y \to \mathbb{R}$ y $f: X \times Y \to \mathbb{R}$
+where $F: X \times Y \to \mathbb{R}$ and $f: X \times Y \to \mathbb{R}$
 are the upper-level objective function (leader) and lower-level objective function
 (follower), respectively. In this work, $X \subseteq \mathbb{R}^n$ and
-$Y \subseteq \mathbb{R}^m$ is considered. The Figure \ref{fig:bilevel} shows a
-schematic diagram of a bilevel optimization problem.
+$Y \subseteq \mathbb{R}^m$ are considered. Here, $G$ and $g$ are the inequality
+constraints of the upper and lower levels, respectively. Figure \ref{fig:bilevel}
+shows a schematic diagram of a BO problem.
 % 
 \begin{figure}[!ht]
     \centering
@@ -379,54 +382,61 @@ schematic diagram of a bilevel optimization problem.
     \label{fig:bilevel}
 \end{figure}
 
-In 1992, Hansen et al. probed that BO problems are (strongly) NP-hard since for
+In 1992, Hansen et al. probed that BO problems are (strongly) NP-hard because 
 evaluating a solution in the simplest BO problem (unimodal linear programming at
-both levels) is also NP-hard \cite{hansen1992new,vicente1994descent}. Many real
-world-problems can be naturally transformed into  BO problems \cite{sinha2018review},
-for example: taxation, border security problems, transportation problems, among
-others \cite{arroyo2010bilevel,bard2013practical,sinha2018review}.
+both levels) is also NP-hard \cite{hansen1992new,vicente1994descent}. Moreover,
+many real-world problems can be naturally modeled as BO problems \cite{sinha2018review},
+for example: taxation, border security problems, transportation problems, machine
+learning algorithms tuning, among others \cite{bard2013practical,sinha2018review,arroyo2010bilevel}.
 
 Due to the importance of BO, many authors have proposed different kind of solutions
 for those problems e.g. mathematical approaches (mathematical programming,
-Karush-Kuhn-Tucker condition for single-level reduction) \cite{shi2005extended,dempe2002foundations},
-evolutionary computation (genetic algorithms, evolution strategy, particle swarm
-optimization, etc.) \cite{derrac2011practical,angelo2013differential,sinha2012unconstrained}.
-In order to handle BO problems, there exist principally three strategies: nested,
-single-level reduction and penalty methods. Nested strategies can be effective but
-computationally very expensive when objective functions are computationally
-expensive or high-dimensionality is present. Single-level reduction is used to
+Karush-Kuhn-Tucker condition for single-level reduction) \cite{dempe2002foundations,shi2005extended},
+evolutionary computation (genetic algorithms, evolution strategies) and swarm
+intelligence (particle swarm optimization) \cite{derrac2011practical,angelo2013differential,sinha2012unconstrained}.
+
+In order to handle BO problems three strategies are identified: (1) nested,
+(2) single-level reduction and (3) penalty methods. Nested strategies can be effective
+but with a high computational cost when objective functions are expensive to
+calculate or when high-dimensionality is present. Single-level reduction is used to
 transform a BO problem into a single-level problem, usually via Karush-Kuhn-Tucker
-conditions for smooth lower level objective function; as we can see, this strategy
-is restricted for differentiable functions \cite{dempe2002foundations,colson2007overview}.
-Penalty methods transform a constrained method into unconstrained adding some
-penalties controlled by using parameters; this strategy can be simple for understanding
-but hard to calibrate in large-scale problems \cite{savard1994steepest,white1993penalty}.
+conditions for smooth lower level objective function. As a consequence, this strategy
+is restricted to differentiable functions \cite{dempe2002foundations,colson2007overview}.
+Penalty methods transform a constrained method into an unconstrained optimization
+problem by adding some penalties controlled by using parameters. This strategy
+can be simple to understand but hard to calibrate particularly in large-scale
+problems \cite{savard1994steepest,white1993penalty}.
 
-As mentioned, some algorithms for BO are reported in the specialized literature,
-actually they are focused on evolutionary computation, since those algorithms have
-been successfully used to solve single-level optimization problems, however the
-complexity time increases considerably when they are applied to BO problems. On
-the other hand, physics-inspired inspired algorithms have been successful used
-for solving single-level optimization problems. Although, they are not as popular
-as the evolutionary algorithms; physics-inspired algorithms can show good performance
-and it can be interesting study it performance in BO problems. On the other hand,
-no physics-inspired algorithms for BO are reported in the state-of-the-art. In this
-paper we present a preliminary version of a physics-inspired algorithm for BO. Here,
-unconstrained nested scheme is considered.
-
-Our approach is called Bilevel Centers Algorithm (BCA) and is based on the center
-of mass concept. Without loss of generality, we assume a maximization problem for
-non-negative functions $f$ and $F$. The center of mass is used in both levels, in
-order to create new biased directions towards promising/feasible regions in the
-search space.
+From the literature review above mentioned, regarding population-based metaheuristics
+for BO problems, most research efforts are focused on evolutionary computation and
+swarm intelligence algorithms because they have been successfully applied to solve
+single-level optimization problems.  On the other hand, in recent years, physics-inspired
+algorithms have become popular to solve complex optimization problems and they
+have provided a competitive performance when solving single-level optimization
+problems \cite{fisicaSurvey}. 
 
 
-This paper is organized as follows: The next section presents the lower level
-optimizer which uses the center of mass concept to promote a biased search to
-promising search space regions. Our approach is presented in the
-Section \ref{sec:ll-optimizer}. Section \ref{sec:experiments} gives some experiments
-and discussion about BCA performance. Conclusions and Future work are described
-in Section \ref{sec:conclu}  and Section \ref{sec:future}, respectively.
+This is the main motivation of this research work, where a first proposal of a
+physics-inspired algorithm, originally designed for global optimization \cite{Mejia2018},
+is now presented to deal with BO problems. Here, an unconstrained nested scheme
+is considered.
+
+Our approach is called Bilevel Centers Algorithm (BCA) and it is based on the center
+of mass concept \cite{Mejia2018}. Without loss of generality, we assume a maximization
+problem for non-negative functions $f$ and $F$ for lower and upper objective
+functions, respectively. The center of mass concept is used in both levels, in
+order to generate new biased directions towards promising/feasible regions of
+the search space.
+
+
+This paper is organized as follows: Section \ref{sec:ll-optimizer} presents the
+lower level optimizer which uses the center of mass concept to promote a biased
+search to promising search space regions. The proposed approach is detailed in
+Section \ref{sec:bca}. After that, Section \ref{sec:experiments} shows the experimental
+design and the corresponding results and discussions about the performance of the
+proposed approach, where a state-of-the-art for BO optimization is used for comparison
+purposes. The conclusions and future work of this research are described in
+Section \ref{sec:conclu} and Section \ref{sec:future}, respectively.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -434,10 +444,10 @@ in Section \ref{sec:conclu}  and Section \ref{sec:future}, respectively.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:ll-optimizer}
 
-The center of mass is the unique point $\vec{c}$ at the center of a distribution
-of mass $U = \{\vec{u}_1,\; \vec{u}_2 , \ldots , \vec{u}_K \}$ in a space that 
-has the property that the weighted sum of position vectors relative to this
-point is zero. That is:
+The center of mass is the unique point $\vec{c}$ at the center of a mass distribution
+$U = \{\vec{u}_1,\; \vec{u}_2 , \ldots , \vec{u}_K \}$ in a space that 
+has the property that the weighted sum of $K$ position vectors relative to this
+point is zero \cite{Mejia2018}, as indicated in Eq. \ref{eqn:masscenter}:
 
 \begin{equation}
     \sum_{i = 1}^K m(\vec{u}_i) (\vec{u}_i - \vec{c}) = 0,  \text{ implies } 
@@ -452,28 +462,29 @@ masses of vectors in $U$. Here, $m$ is a non-negative function.
  
 Thus, the lower level optimizer works as follows: for each solution $\vec{y}_i $
 in the population $P = \{ \vec{y}_1,\ \vec{y}_2, \ \ldots, \ \vec{y}_{N} \} $
-of $N$  solutions in $Y$, we generate $U_i \subset P $ with $K$ \textbf{different}
+of $N$  solutions in $Y$, we generate $U_i \subset P $ with $K$ different
 solutions such that
 % 
 $$
 \bigcup_{i=1}^N U_i = P.
 $$
 %
-Next, from $U_i$ the center of mass $\vec{c}_i$ is computed by using the
-Equation \ref{eqn:masscenter} by setting $m(\vec{u}) = f(\vec{x}, \vec{u})$ where
-$\vec{x}$ is fixed. After that, \textbf{the worst element} $\vec{u}_{\text{worst}}$
+Next, from $U_i$ the center of mass $\vec{c}_i$ is computed by using Eq. \ref{eqn:masscenter}
+considering $m(\vec{u}) = f(\vec{p}, \vec{u})$, where $\vec{p}$ is given by the
+upper level optimizer. After that, the worst element $\vec{u}_{\text{worst}}$
 in $U_i$ is selected according to the following rule:
 % 
 $$
-    \vec{u}_{\text{worst}} \in \arg \min \{f(\vec{x}, \ \vec{u} ) 
+    \vec{u}_{\text{worst}} \in \arg \min \{f(\vec{p}, \ \vec{u} ) 
     % 
     \ : \
     % 
     \vec{u} \in U_i \}.
 $$
 % 
-Now, we are able to generate a direction to locate a new solution $ \vec{y}_i$
-using the already generated center of mass $\vec{c}_i$, $\vec{y}_i$ and $\vec{u}_{\text{worst}}$.
+Now, we are able to generate a direction to locate a new solution $ \vec{q}_i$
+using the already generated center of mass $\vec{c}_i$, the current solution
+$\vec{y}_i$ and the worst solution $\vec{u}_{\text{worst}}$ by using Eq. \ref{eqn:vcu2}:
 % 
 \begin{equation}
     \vec{q}_i = \vec{y}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ) ,
@@ -481,11 +492,30 @@ using the already generated center of mass $\vec{c}_i$, $\vec{y}_i$ and $\vec{u}
 \end{equation}
 % 
 
-Due to this stochastic strategy, this variation operator can help the exploration
-process to avoid premature convergence and it is capable to exploit the vicinity
-near the best solution found. The replacement operator works as follows, if $\vec{q}_i$
-is better than $\vec{y}_i$, then the worst element in $P$ is replaced by $\vec{q}$.
+Due to this stochastic strategy, this variation operator can help the exploration-exploitation 
+process to avoid premature convergence because it combines the center of mass as
+an attractor to promising regions of the search space but using the position of
+the worst solution as a reference to get far away from it \cite{Mejia2018}. The
+replacement operator works as follows: if $\vec{q}_i$ is better than $\vec{y}_i$,
+then the worst element in $P$ is replaced by $\vec{q}$.
 
+
+A linear reduction of the population size (deleting the worst elements) is applied.
+The initial population size is $ N(0) = K*D$ and the final population size $N(T) =  2*K$
+(for successfully generating the center of mass). Thus, the population size over
+time is as in Eq. \ref{eqn:redpop}:
+
+\begin{equation}
+    N(t) = KD - \dfrac{(KD - 2K)  t}{T} 
+    = K \left( D - \dfrac{(D - 2)  t}{T} \right),
+\label{eqn:redpop}
+\end{equation}
+% 
+where $t = 0,1,2,\ldots,T$ and $T$ is the maximum number of iterations.
+
+The procedure for the implementation of the lower level optimizer is detailed in
+Algorithm \ref{alg:ll-optimizer}.
+% 
 \begin{algorithm}[b]
     \caption{Lower Level Optimizer pseudocode}
     \label{alg:ll-optimizer}
@@ -506,27 +536,11 @@ is better than $\vec{y}_i$, then the worst element in $P$ is replaced by $\vec{q
                 % 
             \ENDFOR
             % 
-            \STATE Resize $P$ if necessary.
+            \STATE Resize $P$ with Eq. \ref{eqn:redpop}
         \ENDWHILE
         \RETURN {the best solution in $P$}
     \end{algorithmic}
 \end{algorithm}
-
-Optionally, a linear reduction of the population (deleting the worst elements) can
-be applied. The initial population size is $ N(0) = K*D$ and the final population
-size $N(T) =  2*K$ (for successfully generating the center of mass). Thus, the
-population size over time is:
-\begin{align}
-    N(t) &= KD - \dfrac{(KD - 2K)  t}{T} \\ \nonumber
-         &= K \left( D - \dfrac{(D - 2)  t}{T} \right),
-\end{align}
-% 
-where $t = 0,1,2,\ldots,T$ and $T$ is the maximum number of iterations.
-
-The procedure for the implementation of the lower level optimizer is detailed in
-Algorithm \ref{alg:ll-optimizer}.
-% 
-
 
 
 % section eca (end)
@@ -537,19 +551,21 @@ Algorithm \ref{alg:ll-optimizer}.
 \label{sec:bca}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Here, BCA is presented as the upper lower optimizer. We start describing the
-variation operator of BCA which is considering some properties. Let $F$ and $f$
-defined as in (\ref{eqn:minF1})-(\ref{eqn:G}), and without lost of generality, we
-can assume that both $F$ and $f$ are non-negative and we want to maximize them.
-Hence, the population for a BO problem can be defined as follows: 
-$$
+Here, BCA is presented as the upper lower level optimizer. We start describing the
+variation operator of BCA and its properties. Let $F$ and $f$ be 
+defined as in Eq. (\ref{eqn:minF1}) and Eq. (\ref{eqn:y-arg}), respectively.
+Without loss of generality we can assume that both $F$ and $f$ are non-negative
+and we want to maximize them. Hence, the population for a BO problem can be
+defined as in Eq. \ref{eqn:ECApop}: 
+\begin{equation}
     P = \{ (\vec{x}_1,\; \vec{y}_1), \ (\vec{x}_2,\; \vec{y}_2), \ldots,
            (\vec{x}_N,\; \vec{y}_N)
          \}
          \subset X \times Y,
-$$
+        \label{eqn:ECApop}
+\end{equation}
 where $\vec{y}_i \in \arg \min \{ f(\vec{x}_i, \ \vec{z}) \ : \ \vec{z} \in Y \}$
-for $i = 1,\ldots,N$. Here, $\vec{x}_i$ is uniformly at random.
+for $i = 1,\ldots,N$. Here, $\vec{x}_i$ is generated at random with uniform distribution.
 % 
 
 \subsection{Algorithm Description} % (fold)
@@ -560,13 +576,13 @@ for $i = 1,\ldots,N$. Here, $\vec{x}_i$ is uniformly at random.
     \includegraphics[width=0.95\linewidth]{img/bca-ul.pdf}
     \caption{Diagram of BCA. Here, $x_1,\ldots,x_K$ are used to compute better
     upper level parameters $\vec{p}$. Note that $(x_i,\ y_i^*)$ and
-    $(\vec{p},\ \vec{q})$ are feasible solution.}
+    $(\vec{p},\ \vec{q})$ are feasible solutions.}
     \label{fig:bca-diag}
 \end{figure}
 
-Now, we are able to describe the BCA procedure: For each iteration and each
+Now, we are able to describe the BCA procedure: for each iteration and each
 solution $(\vec{x}_i,\; \vec{y}_i) \in P$, a new upper level parameter is generated
-using the following formulation:
+using the formulation in Eq. \ref{eqn:vcu2F}:
 % 
 \begin{equation}
     \vec{p}_i =  \vec{x}_i + \eta _{i} ( \vec{c}_i - \vec{u}_{ \text{worst} } ),
@@ -574,7 +590,7 @@ using the following formulation:
 \end{equation}
 % 
 %
-where the $\vec{c}_i$ is the center of mass is computed using:
+where the $\vec{c}_i$ is the center of mass computed using:
 %
 \begin{equation}
     \vec{c}_i = \dfrac{1} {W} \sum_{(x,y) \in U} Q(\vec{x},\ \vec{y}) \cdot \vec{x} , 
@@ -587,15 +603,16 @@ where the $\vec{c}_i$ is the center of mass is computed using:
 % 
 where $Q(\vec{x},\ \vec{y}) = F(\vec{x},\ \vec{y}) + f(\vec{x},\ \vec{y})$, $U \subset P $
 such that card$(U) = K$  and $\vec{u}_{ \text{worst}}$ is the first coordinate of
-the worst element in $U$, i.e.
+the worst element in $U$, see Eq. \ref{eqn:uplev-worst}.
 
-$$
-    \vec{u}_{\text{worst}} \in \arg \min \{F(\vec{u}, \ \vec{y} ) 
+\begin{equation}
+    \vec{u}_{\text{worst}} \in \arg \min \{Q(\vec{u}, \ \vec{y} ) 
     % 
     \ : \
     % 
-    \vec{u} \in U_i \}.
-$$
+    \vec{u} \in U_i \}
+    \label{eqn:uplev-worst}
+\end{equation}
 % 
 Note that the function $Q(\vec{x},\ \vec{y})$ is used to translate the upper level
 population towards regions where $F$ and $f$ are maximized simultaneously.
@@ -603,14 +620,20 @@ population towards regions where $F$ and $f$ are maximized simultaneously.
 Finally, the new solution is given by $ (\vec{p}, \ \vec{q}) $ which may 
 replace the worst solution in $ P $ if it is better than $(\vec{x}_i,\; \vec{y}_i)$. Here,
 $  \vec{q} = \arg \min _ {\vec{z} \in Y} f (\vec{p}, \ \vec{z}) $ obtained
-by applying the Algorithm \ref{alg:ll-optimizer}. Figure \ref{fig:bca-diag}
+by applying Algorithm \ref{alg:ll-optimizer}. Figure \ref{fig:bca-diag}
 shows a representation of BCA solution update. 
 
-BCA is summarized in Algorithm \ref{alg:BCA} and was used to carried out some
-experiments by using eight representative test functions for bilevel optimization
-(SMD problems) which are described in \cite{angelo2013differential,sinha2012unconstrained}.
-This empirical study is used to quantify the efficiency of BCA and how it is
-positioned with respect to algorithms of the state-of-the-art.
+The BCA approach requires the definition of three parameter values: $K$, $\eta_{\max}$
+and the population size. Here, $K$ is useful to handle the multi-modality, i.e.,
+large $K$ values provide fast convergence to local optima (useful for unimodal functions).
+When $K$ takes small values, BCA favors an exploratory process. $\eta_{\max}$ mainly
+controls the exploratory process as the stepsize is controlled by this parameter.
+The parameter setting recommended by preliminary experiments is $K = 7$ and $\eta_{\max} = 2$.
+
+BCA is summarized in Algorithm \ref{alg:BCA}. This proposed algorithm was used to
+solve a set of eight test problems to assess the performance of BO algorithms,
+known as SMD problems. Those test problems  are described
+in \cite{angelo2013differential,sinha2012unconstrained,sinha2014test}.
 % 
 
 
@@ -624,16 +647,16 @@ positioned with respect to algorithms of the state-of-the-art.
         \WHILE{the end criterion is not achieved}
             \FOR {each $(\vec{x},\; \vec{y})$ in $P$}
                 \STATE Generate a subset $U \subset P$ such that  card$(U) = K$
-                \STATE Calculate $\vec{c}$ using $U$ with (\ref{eqn:centerF})
+                \STATE Calculate $\vec{c}$ using $U$ with Eq. (\ref{eqn:centerF})
                 \STATE $\eta \gets \text{rand}(0,\; \eta_{\max}) $ 
                 \STATE Calculate $\vec{p}$ using Eq. (\ref{eqn:vcu2F})
-                \STATE Find $\displaystyle \vec{q} \in \arg \min_{\vec{z}\in Y} f(\vec{p},\ \vec{z})$ by using ECA
+                \STATE Find $\displaystyle \vec{q} \in \arg \min_{\vec{z}\in Y} f(\vec{p},\ \vec{z})$ by using Algorithm \ref{alg:ll-optimizer}
                 
                 \IF{$ G (\vec{x},\ \vec{y}) < G (\vec{p},\ \vec{q})  $}
                     \STATE Replace worst element in $P$ with $(\vec{p},\ \vec{q})$.
                 \ENDIF
             \ENDFOR
-            \STATE Resize $P$ if necessary.
+            \STATE Resize $P$ with Eq. \ref{eqn:redpop}
         \ENDWHILE
         \STATE Report best solution in $P$
         % \EndProcedure
@@ -645,13 +668,12 @@ positioned with respect to algorithms of the state-of-the-art.
 \label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-BCA was used to solve some representative test functions described in
-\cite{sinha2012unconstrained,sinha2014test}. The configuration was:
+The configuration used in BCA for the experiments performed was as follows:
 % 
 % 
-The number of Function Evaluations (NFEs) were fixed for the upper level ($500D_{UL} = 2500$)
-and the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
-
+The number of Function Evaluations (NFEs) was fixed for the upper level: $500D_{UL} = 2500$, 
+and the lower level: $500D_{UL}*500D_{LL} = 6,250,000$ total NFEs for both levels.
+The remaining parameters were set as follows:
 \begin{itemize}
     \item Upper level dimension $D_{UL} = 5$
     \item Lower level dimension $D_{LL} = 5$
@@ -664,17 +686,18 @@ and the lower level ($500D_{UL}*500D_{LL} = 6,250,000$).
 \end{itemize}
 
 
-BCA was compared against BLEAQ which is an evolutionary algorithm for BO problems
-\cite{sinha2013efficient,sinha2018review}. BLEAQ is based on quadratic approximations
-of optimal lower level variables with respect to the upper level variables to reduce
-the NFES with competitive results. Both algorithms were used to solve independently
-31 time each test problem.
+BCA was compared against BLEAQ which is a state-of-the-art evolutionary algorithm
+for BO problems \cite{sinha2018review,sinha2013efficient}. BLEAQ is based on quadratic
+approximations of optimal lower level variables with respect to the upper level
+variables. Such strategy lets BLEAQ to reduce the NFEs having competitive results.
+BLEAQ was run with the parameters suggested by the authors \cite{sinha2018review,sinha2013efficient}.
+Both algorithms were used to solve independently 31 times each test problem.
 
 
 
 \begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Upper level accuracy statistics obtained from 31 independent runs.}
+    \caption{Upper level accuracy statistics by BCA obtained from 31 independent runs.}
     \label{tab:ul-accuracy}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
@@ -696,7 +719,7 @@ the NFES with competitive results. Both algorithms were used to solve independen
 
 \begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Lower level accuracy statistics obtained from 31 independent runs.}
+    \caption{Lower level accuracy statistics by BCA obtained from 31 independent runs.}
     \label{tab:ll-accuracy}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
@@ -719,7 +742,7 @@ the NFES with competitive results. Both algorithms were used to solve independen
 
 \begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Upper level NFEs statistics obtained from 31 independent runs.}
+    \caption{Upper level NFEs statistics by BCA obtained from 31 independent runs.}
     \label{tab:ul-fes}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
@@ -743,7 +766,7 @@ the NFES with competitive results. Both algorithms were used to solve independen
 
 \begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Lower level NFEs statistics obtained from 31 independent runs.}
+    \caption{Lower level NFEs statistics by BCA obtained from 31 independent runs.}
     \label{tab:ll-fes}
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
@@ -768,7 +791,7 @@ the NFES with competitive results. Both algorithms were used to solve independen
 
 \begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{NFEs at median of BCA and BLEAQ obtained from 31 independent runs.}
+    \caption{Median NFEs values by BCA and BLEAQ obtained from 31 independent runs.}
     \label{tab:ul-comparative-fes}
     \centering
     \begin{tabular}{|c|c|c||c|c|}
@@ -793,7 +816,7 @@ SMD8 & \textbf{2219} & 5569 & 5547500 & \textbf{289886} \\ \hline
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[!ht]
 \renewcommand{\arraystretch}{1.3}
-    \caption{Functions values at median of BCA and BLEAQ obtained from 31 independent runs.}
+    \caption{Median accuracy values by BCA and BLEAQ obtained from 31 independent runs.}
     \label{tab:ll-comparative-vals}
     \centering
     \begin{tabular}{|c|c|c||c|c|}
@@ -820,21 +843,31 @@ SMD8  & \textbf{6.50E--05} & 7.46E--03 & \textbf{2.33E--05} & 5.63E--03 \\ \hlin
 
 
 
-Tables \ref{tab:ul-accuracy} and \ref{tab:ll-accuracy} shows the statistics
-obtained from the accuracy obtained in the two levels. The best, median, mean,
-worst and std. deviation function evaluations required to solve the respective
-problem using BCA is given in Table \ref{tab:ul-fes} and \ref{tab:ll-fes} for
-each level, respectively. Tables \ref{tab:ul-comparative-fes} and \ref{tab:ul-comparative-fes}
-compares the median accuracy and NFEs at the upper and lower levels required by
-BCA against that required by BLEAQ. Note that, a result in \textbf{boldface} indicates
-the best values found.
+Tables \ref{tab:ul-accuracy} and \ref{tab:ll-accuracy} show the statistical results
+of the accuracy values obtained by the proposed BCA in the two levels of each BO
+test problem. Moreover, the best, median, mean, worst and standard deviation values
+of the NFEs required to solve each BO test problem using BCA are given in
+Table \ref{tab:ul-fes} and \ref{tab:ll-fes} for each level, respectively. 
+Tables \ref{tab:ul-comparative-fes} and \ref{tab:ll-comparative-vals} compare the
+median accuracy and NFEs at the upper and lower levels required by BCA against
+those values obtained by BLEAQ. A result in boldface indicates the best value found.
+
+From Tables \ref{tab:ul-accuracy} and \ref{tab:ll-accuracy} it can be observed
+that BCA is able to consistently reach very competitive results in all test problems
+for both levels. Just problem SMD7 was difficult to solve by BCA. 
+
+A similar robust performance was observed by BCA in the upper level regarding NFEs
+as indicated in Table \ref{tab:ul-fes}. In constrast, more variation in the number
+of NFEs was reported in Table \ref{tab:ll-fes} for the lower level. 
 
 
-It can be observed that both BCA and BLEAQ obtained similar results at median,
-nevertheless BCA require less function evaluations for most of the test problems
-at upper level; this is an interesting property, since we can propose a mathematical
-methodology in order to decrease than number of function evaluations at lower level,
-since the experiments shows an huge number of evaluations are required at this level.
+
+Regarding the comparison against the state-of-the-art algorithm, from Table \ref{tab:ll-comparative-vals}
+it can be concluded that BCA outperformed BLEAQ in five BO test problems in the
+upper level and also in five BO test problems in the lower level. Furthermore,
+BCA required less NFEs in the upper level of six BO test problems based on
+Table \ref{tab:ul-comparative-fes}. However, BLEAQ clearly outperformed BCA in
+the number of lower level NFEs as indicated in the same Table \ref{tab:ul-comparative-fes}.
 
 
 
@@ -843,28 +876,36 @@ since the experiments shows an huge number of evaluations are required at this l
 \label{sec:conclu}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This work detailed a physics-inspired algorithm based on center of mass for bilevel
-optimization. Eight test functions for bilevel optimization were employed in order
-to analyze the performance of the proposed algorithm in terms of accuracy and
-upper/lower level function evaluations.
-
-Additionally, the results showed that BCA was able to provide competitive
-results (in terms of accuracy) compared to an efficient algorithm.
+This work presented the adaptation of a physics-inspired algorithm based on the
+center of mass (BCA) to solve bilevel optimization problems. Both levels used a
+similar variation operator based on the center of mass to find promising regions
+of the search space and a greedy replacement based on fitness. BCA is a simple
+algorithm which requires just three parameters to be fine-tuned by the user (the
+population size, the size of the subset to compute the center of mass and the
+stepsize for the variation operator). Eight test problems were solved to assess
+the performance of the proposed algorithm in terms of upper/lower level accuracy
+and function evaluations compared against a state-of-the-art evolutionary algorithm
+for BO. The overall results suggest that BCA was able to provide competitive
+results in terms of accuracy compared to those obtained by BLEAQ even requiring
+less evaluations in the upper level. However BLEAQ outperformed BCA with respect
+to the number of evaluations required at the lower level.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Future Work}
 \label{sec:future}
 
-The future paths of research are the following: Make a mathematical study  in
-order to approximate feasible solutions at lower level and decrease number of
-evaluations required at this level; adapt some penalty methods to transform the
-nested scheme into a single level optimization problem; also, constraint-handling
-techniques will be explored to scale BCA.
+The future paths of research are the following: carry out a study in
+order to approximate feasible solutions at the lower level to decrease number of
+evaluations required and explore some penalty methods to transform the
+nested scheme into a single level optimization problem.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section*{Acknowledgment}
-% The authors would like to thank...
+\section*{Acknowledgments}
+The first author acknowledges support from the Mexican Council for Science and
+Technology (CONACyT) for a scholarship to pursue graduate studies at the University
+of Veracruz. The second author acknowledges support from CONACyT through project
+No. 220522. 
 
 
 
@@ -885,5 +926,6 @@ techniques will be explored to scale BCA.
 
 % that's all folks
 \end{document}
+
 
 
