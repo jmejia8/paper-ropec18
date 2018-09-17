@@ -393,7 +393,7 @@ Due to the importance of BO, many authors have proposed different kind of soluti
 for those problems e.g. mathematical approaches (mathematical programming,
 Karush-Kuhn-Tucker condition for single-level reduction) \cite{dempe2002foundations,shi2005extended},
 evolutionary computation (genetic algorithms, evolution strategies) and swarm
-intelligence (particle swarm optimization) \cite{derrac2011practical,angelo2013differential,sinha2012unconstrained}.
+intelligence (particle swarm optimization) \cite{derrac2011practical,angelo2013differential,li2006hierarchical}.
 
 In order to handle BO problems three strategies are identified: (1) nested,
 (2) single-level reduction and (3) penalty methods. Nested strategies can be effective
@@ -497,7 +497,7 @@ process to avoid premature convergence because it combines the center of mass as
 an attractor to promising regions of the search space but using the position of
 the worst solution as a reference to get far away from it \cite{Mejia2018}. The
 replacement operator works as follows: if $\vec{q}_i$ is better than $\vec{y}_i$,
-then the worst element in $P$ is replaced by $\vec{q}$.
+then the worst element in $P$ is replaced by $\vec{q}_i$.
 
 
 A linear reduction of the population size (deleting the worst elements) is applied.
@@ -692,8 +692,9 @@ BCA was compared against BLEAQ which is a state-of-the-art evolutionary algorith
 for BO problems \cite{sinha2018review,sinha2013efficient}. BLEAQ is based on quadratic
 approximations of optimal lower level variables with respect to the upper level
 variables. Such strategy lets BLEAQ to reduce the NFEs having competitive results.
-BLEAQ was run with the parameters suggested by the authors \cite{sinha2018review,sinha2013efficient}.
-Both algorithms were used to solve independently 31 times each test problem.
+BLEAQ was run with the parameters suggested by the authors \cite{sinha2018review,sinha2013efficient}
+and the stop criteria was maintained but accuracy was set at $1\times 10^{-4}$ as
+in BCA. Both algorithms were used to solve independently 31 times each test problem.
 
 
 
@@ -871,6 +872,10 @@ BCA required less NFEs in the upper level of six BO test problems based on
 Table \ref{tab:ul-comparative-fes}. However, BLEAQ clearly outperformed BCA in
 the number of lower level NFEs as indicated in the same Table \ref{tab:ul-comparative-fes}.
 
+Note that no statistical test was used to compare the algorithms, since the
+obtained values (from the objective functions) may not represent feasible solutions
+and that can be an unfair comparison of the performance of the algorithms.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -900,7 +905,8 @@ to the number of evaluations required at the lower level.
 The future paths of research are the following: carry out a study in
 order to approximate feasible solutions at the lower level to decrease number of
 evaluations required and explore some penalty methods to transform the
-nested scheme into a single level optimization problem.
+nested scheme into a single level optimization problem. Study or propose a technique
+to compare the algorithm performance for bilevel optimization problems.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Acknowledgments}
